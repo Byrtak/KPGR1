@@ -1,9 +1,15 @@
 package model;
 
+import java.awt.*;
+
 public class Line {
+   /* private Point p1;
+    private Point p2;
+    private Color color;*/
 
     private final int x1, y1, x2, y2;
     private final int color;
+
 
     public Line(int x1, int y1, int x2, int y2, int color) {
         this.x1 = x1;
@@ -13,9 +19,12 @@ public class Line {
         this.color = color;
     }
 
-//    public Line(Point p1, Point p2, int color) {
-//        //TODO
-//    }
+ /*  public Line(Point p1, Point p2, Color color) {
+        this.p1 = p1;
+		this.p2 = p2;
+		this.color = color;
+
+   }*/
 
     public int getX1() {
         return x1;

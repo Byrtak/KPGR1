@@ -1,8 +1,8 @@
 package rasterize;
 
-public class TrivialLineRasterizer extends LineRasterizer {
+public class FilledLineRasterizer extends LineRasterizer {
 
-    public TrivialLineRasterizer(Raster raster) {
+    public FilledLineRasterizer(Raster raster) {
         super(raster);
     }
 
@@ -38,6 +38,6 @@ public class TrivialLineRasterizer extends LineRasterizer {
             }
 
         }
-        // else jiná řídící osa
+
     }
 }

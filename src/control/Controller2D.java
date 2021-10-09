@@ -15,10 +15,11 @@ public class Controller2D implements Controller {
     private final Panel panel;
     private final Raster raster;
 
-    private LineRasterizer trivialLineRasterizer;
+    private LineRasterizer trivialLineRasterizer, dottedLineRasterizer;
     private SeedFiller seedFiller;
 
     private int x, y;
+    private java.awt.Point pxy = null ;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -35,7 +36,8 @@ public class Controller2D implements Controller {
     }
 
     private void initObjects(Raster raster) {
-        trivialLineRasterizer = new TrivialLineRasterizer(raster);
+        trivialLineRasterizer = new FilledLineRasterizer(raster);
+        dottedLineRasterizer = new DottedLineRasterizer(raster);
 
         Polygon polygon = new Polygon();
         polygon.addPoints(new Point(0, 0), new Point(10, 10));
@@ -51,28 +53,27 @@ public class Controller2D implements Controller {
     @Override
     public void initListeners(Panel panel) {
         panel.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.isControlDown()) return;
-
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    x = e.getX();
-                    y = e.getY();
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
+                x = e.getX();
+                y = e.getY();
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)){
+                    raster.clear();
+                    trivialLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 }
             }
 
+
+
             @Override
             public void mouseClicked(MouseEvent e) {
-//                if (e.isControlDown()) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
-                        //TODO
+
+                        x = e.getX();
+                        y = e.getY();
                     } else if (SwingUtilities.isRightMouseButton(e)) {
                         seedFiller.setSeed(new Point(e.getX(), e.getY()));
                         seedFiller.setFillColor(Color.YELLOW.getRGB());
@@ -85,15 +86,17 @@ public class Controller2D implements Controller {
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+
                 if (e.isControlDown()) return;
 
                 if (e.isShiftDown()) {
                     //TODO
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     raster.clear();
-                    trivialLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
+                    dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
+                    raster.clear();
+                    dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isMiddleMouseButton(e)) {
                     //TODO
                 }
@@ -106,7 +109,7 @@ public class Controller2D implements Controller {
             public void keyPressed(KeyEvent e) {
                 // na klávesu C vymazat plátno
                 if (e.getKeyCode() == KeyEvent.VK_C) {
-                    //TODO
+                    raster.clear();
                 }
             }
         });
