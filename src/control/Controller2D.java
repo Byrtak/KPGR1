@@ -15,7 +15,7 @@ public class Controller2D implements Controller {
     private final Panel panel;
     private final Raster raster;
 
-    private LineRasterizer trivialLineRasterizer, dottedLineRasterizer;
+    private LineRasterizer trivialLineRasterizer, dottedLineRasterizer, dashedLineRasterizer;
     private SeedFiller seedFiller;
 
     private int x, y;
@@ -38,6 +38,7 @@ public class Controller2D implements Controller {
     private void initObjects(Raster raster) {
         trivialLineRasterizer = new FilledLineRasterizer(raster);
         dottedLineRasterizer = new DottedLineRasterizer(raster);
+        dashedLineRasterizer = new DashedLineRasterizer(raster);
 
         Polygon polygon = new Polygon();
         polygon.addPoints(new Point(0, 0), new Point(10, 10));
@@ -96,7 +97,7 @@ public class Controller2D implements Controller {
                     dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isRightMouseButton(e)) {
                     raster.clear();
-                    dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
+                    dashedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isMiddleMouseButton(e)) {
                     //TODO
                 }
