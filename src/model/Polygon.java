@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Polygon {
+public class  Polygon {
 
     private final List<Point> points;
     private final int color;
@@ -32,6 +32,7 @@ public class Polygon {
     public void addPoints(List<Point> pointsToAdd) {
         points.addAll(pointsToAdd);
     }
+
 
     // clear pro vymazání seznamu vrcholů
 

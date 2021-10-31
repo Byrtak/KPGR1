@@ -44,6 +44,7 @@ public class Panel extends JPanel {
 
         newRaster.draw(raster);
         raster = newRaster;
+
     }
 
     private void setLoop() {

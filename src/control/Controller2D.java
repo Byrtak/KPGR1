@@ -14,12 +14,14 @@ public class Controller2D implements Controller {
 
     private final Panel panel;
     private final Raster raster;
+    private  RasterBufferedImage rasterBufferedImage;
 
     private LineRasterizer trivialLineRasterizer, dottedLineRasterizer, dashedLineRasterizer, dashAndDottedLineRasterizer;
     private SeedFiller seedFiller;
+    private  Polygon polygon;
+    private PolygonRasterizer polygonRasterizer;
 
-    private int x, y;
-    private java.awt.Point pxy = null ;
+    private int x, y, i = 0;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -40,8 +42,8 @@ public class Controller2D implements Controller {
         dottedLineRasterizer = new DottedLineRasterizer(raster);
         dashedLineRasterizer = new DashedLineRasterizer(raster);
         dashAndDottedLineRasterizer = new DashAndDottedLineRasterizer(raster);
-
-        Polygon polygon = new Polygon();
+        polygonRasterizer = new PolygonRasterizer(raster);
+        polygon = new Polygon();
         polygon.addPoints(new Point(0, 0), new Point(10, 10));
 
         seedFiller = new SeedFiller(raster);
@@ -59,27 +61,42 @@ public class Controller2D implements Controller {
             public void mousePressed(MouseEvent e) {
                 x = e.getX();
                 y = e.getY();
+                //polygon.addPoints(new Point(x,y));
+                if(i==0){
+                    polygonRasterizer.setPoint(x, y);
+                    i++;
+                }
+
             }
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)){
-                    raster.clear();
-                    trivialLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
+                    //raster.clear();
+                  //  trivialLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xf0ff0f);
+                    polygonRasterizer.setPoint(e.getX(), e.getY());
+                    if (i>2) polygonRasterizer.rasterize(polygonRasterizer.getPointX(i-1), polygonRasterizer.getPointY(i-1),polygonRasterizer.getPointX(0), polygonRasterizer.getPointY(0),0x000000 );
+                    if (i==1){
+                        polygonRasterizer.rasterize(polygonRasterizer.getPointX(0), polygonRasterizer.getPointY(0),polygonRasterizer.getPointX(i), polygonRasterizer.getPointY(i),0xf0ff0f );
+                        i++;
+                    } else {
+                        polygonRasterizer.rasterize(polygonRasterizer.getPointX(i-1), polygonRasterizer.getPointY(i-1),polygonRasterizer.getPointX(i), polygonRasterizer.getPointY(i),0xf0ff0f );
+                        polygonRasterizer.rasterize(polygonRasterizer.getPointX(i), polygonRasterizer.getPointY(i),polygonRasterizer.getPointX(0), polygonRasterizer.getPointY(0),0xf0ff0f );
+                        i++;
+                    }
+
+
                 }
             }
-
-
 
             @Override
             public void mouseClicked(MouseEvent e) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
-
                         x = e.getX();
                         y = e.getY();
                     } else if (SwingUtilities.isRightMouseButton(e)) {
-                        seedFiller.setSeed(new Point(e.getX(), e.getY()));
-                        seedFiller.setFillColor(Color.YELLOW.getRGB());
-                        seedFiller.fill();
+                       // seedFiller.setSeed(new Point(e.getX(), e.getY()));
+                        //seedFiller.setFillColor(Color.YELLOW.getRGB());
+                        //seedFiller.fill();
                     }
 //                }
             }
@@ -94,11 +111,11 @@ public class Controller2D implements Controller {
                 if (e.isShiftDown()) {
                     //TODO
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    raster.clear();
-                    dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
+                   // raster.clear();
+                    //dottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isRightMouseButton(e)) {
-                    raster.clear();
-                    dashedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
+                    //raster.clear();
+                    //dashedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isMiddleMouseButton(e)) {
                     raster.clear();
                     dashAndDottedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
@@ -112,7 +129,11 @@ public class Controller2D implements Controller {
             public void keyPressed(KeyEvent e) {
                 // na klávesu C vymazat plátno
                 if (e.getKeyCode() == KeyEvent.VK_C) {
+                    polygonRasterizer.clearPoints();
+                    i=0;
                     raster.clear();
+                    update();
+
                 }
             }
         });
@@ -122,6 +143,8 @@ public class Controller2D implements Controller {
             public void componentResized(ComponentEvent e) {
                 panel.resize();
                 initObjects(panel.getRaster());
+
+
             }
         });
     }
@@ -129,6 +152,7 @@ public class Controller2D implements Controller {
     private void update() {
 //        panel.clear();
         //TODO
+        panel.repaint();
     }
 
     private void hardClear() {
