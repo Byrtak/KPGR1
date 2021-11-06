@@ -39,7 +39,7 @@ public class RasterBufferedImage implements Raster {
     @Override
     public void setPixel(int x, int y, int color) {
         // ošetřit velikost plátna
-        img.setRGB(x, y, color);
+        getImg().setRGB(x, y, color);
     }
 
     @Override
