@@ -135,6 +135,7 @@ public class Controller2D implements Controller {
             public void componentResized(ComponentEvent e) {
                 panel.resize();
                 initObjects(panel.getRaster());
+                update();
 
 
             }
