@@ -22,7 +22,7 @@ public class Controller2D implements Controller {
     private CircleRasterizer circleRasterizer;
 
 
-    private int x, y, i = 0;
+    private int x, y, i,xx,yy = 0;
     private boolean open =false;
 
     public Controller2D(Panel panel) {
@@ -60,6 +60,8 @@ public class Controller2D implements Controller {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                xx = e.getX();
+                yy = e.getY();
                 if (SwingUtilities.isLeftMouseButton(e)){
                     polygon.setPoint(e.getX(), e.getY());
                     open = false;
@@ -103,6 +105,8 @@ public class Controller2D implements Controller {
                     }
                 } else if (SwingUtilities.isRightMouseButton(e)) {
                     panel.clear();
+                    polygon.clearPoints();
+                    circleRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                     dashedLineRasterizer.rasterize(x, y, e.getX(), e.getY(), 0xffffff);
                 } else if (SwingUtilities.isMiddleMouseButton(e)) {
                     seedFiller.setSeed(new Point(e.getX(), e.getY()));
@@ -131,14 +135,14 @@ public class Controller2D implements Controller {
             public void componentResized(ComponentEvent e) {
                 panel.resize();
                 initObjects(panel.getRaster());
-                update();
+
 
             }
         });
     }
 
     private void drawLine(){
-        raster.clear();
+        panel.clear();
         if (polygon.getSize() > 1){
             for (int i = 0; i < polygon.getSize(); i++){
                 trivialLineRasterizer.rasterize(polygon.getPointX((i+1) % polygon.getSize()), polygon.getPointY((i+1) % polygon.getSize()), polygon.getPointX(i ), polygon.getPointY(i),0xffffff );
@@ -150,8 +154,5 @@ public class Controller2D implements Controller {
         panel.repaint();
     }
 
-    private void hardClear() {
-        panel.clear();
-    }
 
 }
