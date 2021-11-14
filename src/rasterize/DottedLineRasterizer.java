@@ -1,6 +1,6 @@
 package rasterize;
 
-public class DottedLineRasterizer extends LineRasterizer {
+public class DottedLineRasterizer extends FilledLineRasterizer {
 
     public DottedLineRasterizer(Raster raster) {
         super(raster);

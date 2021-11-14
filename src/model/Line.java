@@ -1,14 +1,27 @@
 package model;
 
-import java.awt.*;
-
 public class Line {
-   /* private Point p1;
-    private Point p2;
-    private Color color;*/
+    private Point a;
+    private Point b;
 
-    private final int x1, y1, x2, y2;
-    private final int color;
+    public Point getA() {
+        return a;
+    }
+
+    public void setA(Point a) {
+        this.a = a;
+    }
+
+    public Point getB() {
+        return b;
+    }
+
+    public void setB(Point b) {
+        this.b = b;
+    }
+
+    private int x1, y1, x2, y2;
+    private int color;
 
 
     public Line(int x1, int y1, int x2, int y2, int color) {
@@ -19,12 +32,12 @@ public class Line {
         this.color = color;
     }
 
- /*  public Line(Point p1, Point p2, Color color) {
-        this.p1 = p1;
-		this.p2 = p2;
+   public Line(Point a, Point b, int color) {
+        this.a = a;
+		this.b = b;
 		this.color = color;
 
-   }*/
+   }
 
     public int getX1() {
         return x1;

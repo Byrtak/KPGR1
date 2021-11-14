@@ -1,8 +1,8 @@
 package rasterize;
 
-public class DashedLineRasterizer extends LineRasterizer{
+public class DashedLineRasterizer extends FilledLineRasterizer{
 
-    public DashedLineRasterizer(Raster raster){
+    public DashedLineRasterizer(Raster raster) {
         super(raster);
     }
 

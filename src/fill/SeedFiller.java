@@ -34,7 +34,6 @@ public class SeedFiller implements Filler {
         if (x > 0 && y > 0 && x < raster.getWidth() - 1 && y < raster.getHeight() - 1) {
             if (raster.getPixel(x, y)==backgroundColor && raster.getPixel(x, y)!=fillColor) {
                 raster.setPixel(x, y, fillColor);
-
                 seed(x + 1, y); // doprava
                 seed(x - 1, y); // doleva
                 seed(x, y + 1); // dolů

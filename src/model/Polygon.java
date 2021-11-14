@@ -1,27 +1,26 @@
 package model;
-import java.util.ArrayList;
+import rasterize.FilledLineRasterizer;
+import rasterize.Raster;
 import java.util.List;
 
 public class  Polygon {
-    List<Point> points = new ArrayList<>();
+    List<Point> points;
+    FilledLineRasterizer trivialLineRasterizer;
+    private final Raster raster;
 
-    public int getSize(){
-        return points.size();
+    public Polygon(Raster raster, List<Point> points){
+        trivialLineRasterizer = new FilledLineRasterizer(raster);
+        this.raster  = raster;
+        this.points = points;
     }
 
-    public void setPoint(int x, int y){
-        points.add(new Point(x,y));
+    public void drawPoly() {
+        raster.clear();
+        if (points.size() > 1) {
+            for (int i = 0; i < points.size(); i++) {
+                trivialLineRasterizer.rasterize(points.get((i + 1) % points.size()).getX(), points.get((i + 1) % points.size()).getY(), points.get(i).getX(), points.get(i).getY(), 0xffffff);
+            }
+        }
+    }
 
-    }
-    public void clearPoints(){
-        points.clear();
-
-    }
-    public int getPointX(int i){
-        return points.get(i).getX();
-    }
-    public int getPointY(int i){
-        return points.get(i).getY();
-
-    }
 }
