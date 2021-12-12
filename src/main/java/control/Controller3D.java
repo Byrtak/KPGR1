@@ -67,23 +67,33 @@ public class Controller3D implements Controller{
             public void keyPressed(KeyEvent e) {
 
                 switch (e.getKeyCode()) {
-                    //A
+                    //A rotation left
                     case 65 -> {
-                        model = new Mat4RotZ(-0.42D);
+                        model = new Mat4RotZ(-0.042D);
                         renderer.setModel(model);
-
                     }
-                    //D
+                    //D rotation right
                     case 68 -> {
-                        renderer.setModel(new Mat4RotZ(0.32D));
+                        renderer.setModel(new Mat4RotZ(0.042D));
 
                     }
-                    //S
-                    case 83 -> renderer.setProjection(new Mat4PerspRH(0.7853981633974483D, (double) ((float) raster.getHeight() / (float) raster.getWidth()), 0.01D, 10.0D));
+                    //S rotation down
+                    case 83 ->{
+                        renderer.setModel(new Mat4RotY(0.042D));
+                    }
 
-                    //W
+                            //renderer.setProjection(new Mat4PerspRH(0.7853981633974483D, (double) ((float) raster.getHeight() / (float) raster.getWidth()), 0.01D, 10.0D));
+                    //W rotation up
                     case 87 -> {
-
+                        renderer.setModel(new Mat4RotY(-0.042D));
+                    }
+                    //Q scale +
+                    case 81 -> {
+                        renderer.setModel(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                    }
+                    //E scale -
+                    case 69 -> {
+                        renderer.setModel(new Mat4Scale(0.9D, 0.9D, 0.9D));
                     }
                 }
                 redraw();
