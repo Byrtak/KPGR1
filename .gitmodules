@@ -1,0 +1,9 @@
+[submodule "src/transforms"]
+	path = src/transforms
+	url = https://gitlab.com/honza.vanek/transforms
+[submodule "src/main/transforms"]
+	path = src/main/transforms
+	url = https://gitlab.com/honza.vanek/transforms
+[submodule "src/main/java/model3D"]
+	path = src/main/java/model3D
+	url = https://github.com/Byrtak/KPGRF1_Task3.git
