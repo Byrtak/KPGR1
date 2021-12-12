@@ -42,8 +42,53 @@ public class Renderer3D implements GPURenderer{
                 Point3D p1 = vb.get(i1);
                 Point3D p2 = vb.get(i2);
                 transformLine(p1, p2,solid.getColor());
+
+
             }
         }
+    }
+//    public void drawAx(Scene scene) {
+//        List<Solid> solidsAx = scene.getSolidsAx();
+//        for (Solid solid : solidsAx) {
+//            List<Integer> ib = solid.getIndexBuffer();
+//            List<Point3D> vb = solid.getVertexBuffer();
+//            for (int i = 0; i < ib.size(); i += 2) {
+//                Integer i1 = ib.get(i);
+//                Integer i2 = ib.get(i + 1);
+//                Point3D p1 = vb.get(i1);
+//                Point3D p2 = vb.get(i2);
+//                transformAxis(p1, p2,solid.getColor());
+//
+//
+//
+//            }
+//        }
+//    }
+
+    private void transformAxis(Point3D a, Point3D b, int color) {
+        a = a.mul(new Mat4Identity()).mul(new Mat4Identity()).mul(new Mat4Identity());
+        b = b.mul(new Mat4Identity()).mul(new Mat4Identity()).mul(new Mat4Identity());
+        if(clip(a)) return;
+        if(clip(b)) return;
+
+        Optional<Vec3D> dehomogA = a.dehomog();
+        Optional<Vec3D> dehomogB = b.dehomog();
+        if(dehomogA.isEmpty() || dehomogB.isEmpty()) return;
+
+        Vec3D v1 = dehomogA.get();
+        Vec3D v2 = dehomogB.get();
+
+        Vec3D vv1 = transformToWindow(v1);
+        Vec3D vv2 = transformToWindow(v2);
+
+        lineRasterizer.rasterize(
+                (int)Math.round(vv1.getX()),
+                (int)Math.round(vv1.getY()),
+                (int)Math.round(vv2.getX()),
+                (int)Math.round(vv2.getY()),color
+
+        );
+
     }
 
     private void transformLine(Point3D a, Point3D b, int color) {
@@ -97,11 +142,18 @@ return false;
 
     @Override
     public void setView(Mat4 view) {
-     this.view = view;
+     this.view = this.view.mul(view);
     }
 
     @Override
     public void setProjection(Mat4 projection) {
       this.projection = projection;
+    }
+
+    @Override
+    public void resetMatrix() {
+        model = new Mat4Identity();
+//        view = new Mat4Identity();
+//        projection =new Mat4Identity();
     }
 }
