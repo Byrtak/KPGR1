@@ -34,40 +34,38 @@ public class Renderer3D implements GPURenderer{
     public void draw(Scene scene) {
         List<Solid> solids = scene.getSolids();
         for (Solid solid : solids) {
-            List<Integer> ib = solid.getIndexBuffer();
-            List<Point3D> vb = solid.getVertexBuffer();
-            for (int i = 0; i < ib.size(); i += 2) {
-                Integer i1 = ib.get(i);
-                Integer i2 = ib.get(i + 1);
-                Point3D p1 = vb.get(i1);
-                Point3D p2 = vb.get(i2);
-                transformLine(p1, p2,solid.getColor());
-
+            //Draw XYZ axis
+            if (solid.isAxis()){
+                List<Integer> ib = solid.getIndexBuffer();
+                List<Point3D> vb = solid.getVertexBuffer();
+                for (int i = 0; i < ib.size(); i += 2) {
+                    Integer i1 = ib.get(i);
+                    Integer i2 = ib.get(i + 1);
+                    Point3D p1 = vb.get(i1);
+                    Point3D p2 = vb.get(i2);
+                    transformAxis(p1, p2,solid.getColor());
+                }
+            }
+            //draw normal object
+            if (!solid.isAxis()){
+                List<Integer> ib = solid.getIndexBuffer();
+                List<Point3D> vb = solid.getVertexBuffer();
+                for (int i = 0; i < ib.size(); i += 2) {
+                    Integer i1 = ib.get(i);
+                    Integer i2 = ib.get(i + 1);
+                    Point3D p1 = vb.get(i1);
+                    Point3D p2 = vb.get(i2);
+                    transformLine(p1, p2,solid.getColor());
+            }
 
             }
         }
+
     }
-//    public void drawAx(Scene scene) {
-//        List<Solid> solidsAx = scene.getSolidsAx();
-//        for (Solid solid : solidsAx) {
-//            List<Integer> ib = solid.getIndexBuffer();
-//            List<Point3D> vb = solid.getVertexBuffer();
-//            for (int i = 0; i < ib.size(); i += 2) {
-//                Integer i1 = ib.get(i);
-//                Integer i2 = ib.get(i + 1);
-//                Point3D p1 = vb.get(i1);
-//                Point3D p2 = vb.get(i2);
-//                transformAxis(p1, p2,solid.getColor());
-//
-//
-//
-//            }
-//        }
-//    }
 
     private void transformAxis(Point3D a, Point3D b, int color) {
-        a = a.mul(new Mat4Identity()).mul(new Mat4Identity()).mul(new Mat4Identity());
-        b = b.mul(new Mat4Identity()).mul(new Mat4Identity()).mul(new Mat4Identity());
+        a = a.mul(new Mat4Identity()).mul(view).mul(projection);
+        b = b.mul(new Mat4Identity()).mul(view).mul(projection);
         if(clip(a)) return;
         if(clip(b)) return;
 
@@ -120,17 +118,26 @@ public class Renderer3D implements GPURenderer{
 
     private Vec3D transformToWindow(Vec3D vec) {
         //slide 90
+        //
+
+        int w = raster.getWidth() / 2;
+        int h = raster.getHeight() / 2;
+//        return vec.mul(new Vec3D(1,-1,1))
+//                .mul(new Vec3D(1,1,0))
+//                .mul(new Vec3D(raster.getWidth() / 2.0, raster.getHeight() /2.0,1.0D));
         return vec.mul(new Vec3D(1,-1,1))
                 .mul(new Vec3D(1,1,0))
-                .mul(new Vec3D(raster.getWidth() / 2.0, raster.getHeight() /2.0,1));
+                .mul(new Vec3D(w-1 / 2.0, h-1 /2.0,1.0D));
 
 
     }
 
     private boolean clip(Point3D p) {
         //slide 78
-//        return !(-(p.getW()) <= p.getX()) || !(p.getX() <= p.getW()) || !(-(p.getW()) <= p.getY()) || !(p.getY() <= p.getW()) || !(0 <= p.getZ()) || !(p.getZ() <= p.getW());
-return false;
+        //−w ≤ x ≤ w ,−w ≤ y ≤ w ,0 ≤ z ≤
+        return false;
+        //!(Math.min(a.x, b.x) < -1.0D) && !(Math.max(a.x, b.x) > 1.0D) && !(Math.min(a.y, b.y) < -1.0D) && !(Math.max(a.y, b.y) > 1.0D) && !(Math.min(a.z, b.z) < 0.0D) && !(Math.max(a.z, b.z) > 1.0D)
+     //   if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())); return true;
     }
 
     @Override

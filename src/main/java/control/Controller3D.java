@@ -20,14 +20,15 @@ public class Controller3D implements Controller{
     private final GPURenderer renderer;
     private final Scene mainScene;
     private final Scene axisScene;
-    int oX,oY,nX,nY;
+    double oX,oY,nX,nY;
 
     public Controller3D(Panel panel) {
         this.raster = panel.getRaster();
         this.renderer = new Renderer3D(raster);
         initListeners(panel);
 // 9,-13,0,90,/-15
-        camera = new Camera().withPosition(new Vec3D(9,-13,0)).withAzimuth(Math.toRadians(90)).withZenith(-15);
+        camera = new Camera().withPosition(new Vec3D(35, 50, -5.0)).withAzimuth(Math.toRadians(210)).withZenith(-15);
+        //camera = new Camera().withPosition(new Vec3D(10, -12, -12.0)).withAzimuth(Math.toRadians(10)).withZenith();
 
         projection = new Mat4PerspRH(
                 Math.PI /3,
@@ -40,8 +41,7 @@ public class Controller3D implements Controller{
         axisScene = new Scene();
         mainScene = new Scene();
         mainScene.getSolids().add(new Cube(0xf00f0f));
-        //mainScene.getSolids().add(new Pyramid(0x11F314));
-       // mainScene.getSolids().add(new AxisLines(16711680));
+        mainScene.getSolids().add(new Pyramid(0xf30f7f));
         axisScene.getSolids().add(new AxisLineX());
         axisScene.getSolids().add(new AxisLineY());
         axisScene.getSolids().add(new AxisLineZ());
@@ -67,7 +67,6 @@ public class Controller3D implements Controller{
         raster.clear();
         renderer.resetMatrix();
         renderer.draw(mainScene);
-        renderer.draw(axisScene);
     }
 
 
@@ -79,8 +78,8 @@ public class Controller3D implements Controller{
             public void mousePressed(MouseEvent e) {
                 oY=e.getY();
                 oX=e.getX();
-//                nY = oY;
-//                nX = oX;
+                nY = oY;
+                nX = oX;
             }
 
             @Override
@@ -92,11 +91,11 @@ public class Controller3D implements Controller{
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                nY = e.getY();
-                nX = e.getX();
+                nX = e.getY();
+                nY = e.getX();
                 if (SwingUtilities.isRightMouseButton(e)){
-                    renderer.setModel(new Mat4RotZ(Math.PI * (float)(oY - nY) / (float)(raster.getHeight()))
-                            .mul(new Mat4RotY(Math.PI * (float)(oX - nX) / (float)(raster.getWidth()))));
+                    renderer.setModel(new Mat4RotY(  (oY - nY) / (double) (raster.getHeight()))
+                            .mul(new Mat4RotX( (oX - nX) / (double) (raster.getWidth()))));
 
                 }
                 redraw();
