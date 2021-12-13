@@ -6,3 +6,4 @@
 /out
 *.iml
 /*.jar
+/src/main/java/model3D/
