@@ -15,4 +15,6 @@ public interface GPURenderer {
 
     void resetMatrix();
 
+    void setOldModel();
+
 }

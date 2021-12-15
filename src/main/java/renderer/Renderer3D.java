@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class Renderer3D implements GPURenderer{
 
-    private  Mat4 model, view,projection;
+    private  Mat4 model, oldModel, view,projection;
 
     private final LineRasterizer lineRasterizer;
     private final Raster raster;
@@ -25,6 +25,7 @@ public class Renderer3D implements GPURenderer{
         this.lineRasterizer = new FilledLineRasterizer(raster);
 
         model = new Mat4Identity();
+        oldModel = model;
         view = new Mat4Identity();
         projection = new Mat4Identity();
     }
@@ -33,6 +34,10 @@ public class Renderer3D implements GPURenderer{
     @Override
     public void draw(Scene scene) {
         List<Solid> solids = scene.getSolids();
+
+        Solid s1 = solids.get(0);
+
+        Solid s2 = solids.get(1);
         for (Solid solid : solids) {
             //Draw XYZ axis
             if (solid.isAxis()){
@@ -55,7 +60,7 @@ public class Renderer3D implements GPURenderer{
                     Integer i2 = ib.get(i + 1);
                     Point3D p1 = vb.get(i1);
                     Point3D p2 = vb.get(i2);
-                    transformLine(p1, p2,solid.getColor());
+                    //transformLine(p1, p2,solid.getColor(),solid.CanRotate());
             }
 
             }
@@ -89,10 +94,22 @@ public class Renderer3D implements GPURenderer{
 
     }
 
-    private void transformLine(Point3D a, Point3D b, int color) {
+    private void transformLine(Point3D a, Point3D b, int color, boolean canRotate) {
 
-        a = a.mul(model).mul(view).mul(projection);
-        b = b.mul(model).mul(view).mul(projection);
+        if (canRotate){
+            if (!oldModel.eEquals(model)) {
+                a = a.mul(model).mul(view).mul(projection);
+                b = b.mul(model).mul(view).mul(projection);
+            } else {
+                a = a.mul(oldModel).mul(view).mul(projection);
+                b = b.mul(oldModel).mul(view).mul(projection);
+            }
+
+        }else {
+            a = a.mul(oldModel).mul(view).mul(projection);
+            b = b.mul(oldModel).mul(view).mul(projection);
+        }
+
         if(clip(a)) return;
         if(clip(b)) return;
 
@@ -139,12 +156,13 @@ public class Renderer3D implements GPURenderer{
         //!(Math.min(a.x, b.x) < -1.0D) && !(Math.max(a.x, b.x) > 1.0D) && !(Math.min(a.y, b.y) < -1.0D) && !(Math.max(a.y, b.y) > 1.0D) && !(Math.min(a.z, b.z) < 0.0D) && !(Math.max(a.z, b.z) > 1.0D)
      //   if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())); return true;
     }
+    public void setOldModel(){
+        oldModel = model;
+    }
 
     @Override
     public void setModel(Mat4 model) {
         this.model = this.model.mul(model);
-       // this.model = model;
-
     }
 
     @Override
@@ -160,6 +178,7 @@ public class Renderer3D implements GPURenderer{
     @Override
     public void resetMatrix() {
         model = new Mat4Identity();
+        oldModel = model;
 //        view = new Mat4Identity();
 //        projection =new Mat4Identity();
     }

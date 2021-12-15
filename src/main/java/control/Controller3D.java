@@ -51,6 +51,9 @@ public class Controller3D implements Controller{
 
     private void display() {
         raster.clear();
+        for (Solid s : mainScene.getSolids()) {
+            s.setCanRotate();
+        }
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
         renderer.draw(mainScene);
@@ -63,6 +66,7 @@ public class Controller3D implements Controller{
         renderer.draw(mainScene);
         renderer.draw(axisScene);
     }
+
     private void reset(){
         raster.clear();
         renderer.resetMatrix();
@@ -109,8 +113,8 @@ public class Controller3D implements Controller{
                 switch (e.getKeyCode()) {
 
                     case 37->{
-//                        view = camera.left(1.002d);
-//                        renderer.setView(view);
+
+                        //                        renderer.setView(view);
                     }
                     case 38->{
                         camera.up(0.2f);
@@ -121,15 +125,38 @@ public class Controller3D implements Controller{
                     case 40->{
                         camera.down(0.2f);
                     }
+                    //1
+                    case 49->{
+                        Solid s = mainScene.getSolids().get(0);
+                        s.setCanRotate();
+
+
+                    }//2
+                    case 50->{
+                        Solid s = mainScene.getSolids().get(1);
+                        s.setCanRotate();
+                        if (!s.CanRotate()) {
+                            renderer.setOldModel();
+                        }
+
+                    }
                     //A rotation left
                     case 65 -> {
-                        model = new Mat4RotZ(-0.042D);
-                        renderer.setModel(model);
+//                        model = new Mat4RotZ(-0.042D);
+//                        renderer.setModel(model);
+                        for (Solid s : mainScene.getSolids()) {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotZ(-0.042D));
+                            }
+                        }
                     }
                     //D rotation right
                     case 68 -> {
-                        renderer.setModel(new Mat4RotZ(0.042D));
-
+                        for (Solid s : mainScene.getSolids()) {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotZ(0.042D));
+                            }
+                        }
                     }
                     //S rotation down
                     case 83 ->{
