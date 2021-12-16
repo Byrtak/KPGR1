@@ -98,8 +98,8 @@ public class Controller3D implements Controller{
                 nX = e.getY();
                 nY = e.getX();
                 if (SwingUtilities.isRightMouseButton(e)){
-                    renderer.setModel(new Mat4RotY(  (oY - nY) / (double) (raster.getHeight()))
-                            .mul(new Mat4RotX( (oX - nX) / (double) (raster.getWidth()))));
+                    renderer.setModel(new Mat4RotY(Math.PI *  (oY - nY) / (double) (raster.getHeight()))
+                            .mul(new Mat4RotX(Math.PI *  (oX - nX) / (double) (raster.getWidth()))));
 
                 }
                 redraw();
@@ -109,75 +109,178 @@ public class Controller3D implements Controller{
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-
-                switch (e.getKeyCode()) {
-
-                    case 37->{
-
-                        //                        renderer.setView(view);
-                    }
-                    case 38->{
-                        camera.up(0.2f);
-                    }
-                    case 39->{
-                        camera.right(0.2f);
-                    }
-                    case 40->{
-                        camera.down(0.2f);
-                    }
-                    //1
-                    case 49->{
-                        Solid s = mainScene.getSolids().get(0);
-                        s.setCanRotate();
+                Solid s = mainScene.getSolids().get(0);
+                Solid s1 = mainScene.getSolids().get(1);
 
 
-                    }//2
-                    case 50->{
-                        Solid s = mainScene.getSolids().get(1);
-                        s.setCanRotate();
-                        if (!s.CanRotate()) {
-                            renderer.setOldModel();
+                if (e.isShiftDown()){
+                    switch (e.getKeyCode()){
+                        /*====================Transformation of translation===============*/
+                        //Shift+ PgUp button
+                        case 33->{
+                            if (s.CanRotate()){
+                                renderer.setModel( new Mat4Transl(1.0D, 0.0D, 0.0D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1( new Mat4Transl(1.0D, 0.0D, 0.0D));
+                            }
                         }
+                        //Shift+ PgDn button
+                        case 34->{
+                            if (s.CanRotate()){
+                                renderer.setModel( new Mat4Transl(-1.0D, 0.0D, 0.0D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1( new Mat4Transl(-1.0D, 0.0D, 0.0D));
+                            }
+                        }
+                        //Shift+ left Arrow
+                        case 37->{
+                            if (s.CanRotate()){
+                                renderer.setModel( new Mat4Transl(0.0D, 1.0D, 0.0D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1( new Mat4Transl(0.0D, 1.0D, 0.0D));
+                            }
+                        }
+                        //Shift+ up Arrow
+                        case 38->{
+                            if (s.CanRotate()){
+                                renderer.setModel( new Mat4Transl(0.0D, 0.0D, 1.0D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4Transl(0.0D, 0.0D, 1.0D));;
+                            }
+                        }
+                        //Shift+ right Arrow
+                        case 39->{
+                            if (s.CanRotate()){
+                            renderer.setModel( new Mat4Transl(0.0D, -1.0D, 0.0D));
+                        }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4Transl(0.0D, -1.0D, 0.0D));
+                            }
+                        }
+                        //Shift+ down Arrow
+                        case 40->{
+                            if (s.CanRotate()){
+                                renderer.setModel( new Mat4Transl(0.0D, 0.0D, -1.0D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1( new Mat4Transl(0.0D, 0.0D, -1.0D));
+                            }
+                        }
+                        /*================================================================*/
 
-                    }
-                    //A rotation left
-                    case 65 -> {
-//                        model = new Mat4RotZ(-0.042D);
-//                        renderer.setModel(model);
-                        for (Solid s : mainScene.getSolids()) {
+                        /*==============Transformation of rotation========================*/
+                        //Shift+A Z-rotation left
+                        case 65 -> {
                             if (s.CanRotate()){
                                 renderer.setModel(new Mat4RotZ(-0.042D));
                             }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotZ(-0.042D));
+                            }
                         }
-                    }
-                    //D rotation right
-                    case 68 -> {
-                        for (Solid s : mainScene.getSolids()) {
+                        //Shift+D Z-rotation right
+                        case 68 -> {
                             if (s.CanRotate()){
                                 renderer.setModel(new Mat4RotZ(0.042D));
                             }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotZ(0.042D));
+                            }
                         }
+                        //Shift+S Y-rotation down
+                        case 83 ->{
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotY(0.042D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotY(0.042D));
+                            }
+                        }
+                        //Shift+W Y-rotation up
+                        case 87 -> {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotY(-0.042D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotY(-0.042D));
+                            }
+                        }
+                        //Shift+Q X-rotation
+                        case 81 -> {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotX(0.042D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotX(0.042D));
+                            }
+                        }
+                        //Shift+E X-rotation
+                        case 69 -> {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4RotX(-0.042D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4RotX(-0.042D));
+                            }
+                        }
+                        /*================================================================*/
                     }
-                    //S rotation down
-                    case 83 ->{
-                        renderer.setModel(new Mat4RotY(0.042D));
-                    }
+                }
 
-                            //renderer.setProjection(new Mat4PerspRH(0.7853981633974483D, (double) ((float) raster.getHeight() / (float) raster.getWidth()), 0.01D, 10.0D));
-                    //W rotation up
-                    case 87 -> {
-                        renderer.setModel(new Mat4RotY(-0.042D));
+                switch (e.getKeyCode()) {
+
+                    //1 cube
+                    case 49->{
+                        s.setCanRotate();
+                    }//2 pyramid
+                    case 50->{
+                        s1.setCanRotate();
+
                     }
+                    //A
+                    case 65 -> {
+
+                    }
+                    //D
+                    case 68 -> {
+
+                    }
+                    //S
+                    case 83 ->{
+
+                    }
+                    //W
+                    case 87 -> {
+
+                    }
+                    /*==============Transformation of scale========================*/
                     //Q scale +
                     case 81 -> {
-                        renderer.setModel(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                        if (s.CanRotate()){
+                            renderer.setModel(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                        }
+                        if (s1.CanRotate()){
+                            renderer.setModel1(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                        }
                     }
                     //E scale -
                     case 69 -> {
-                        renderer.setModel(new Mat4Scale(0.9D, 0.9D, 0.9D));
-                    }//r
+                        if (s.CanRotate()){
+                            renderer.setModel(new Mat4Scale(0.9D, 0.9D, 0.9D));
+                        }
+                        if (s1.CanRotate()){
+                            renderer.setModel1(new Mat4Scale(0.9D, 0.9D, 0.9D));
+                        }
+                    }
+                    /*================================================================*/
+
+                    //r
                     case 82 -> {
-                        renderer.setModel( new Mat4Transl(0.0D, -1.0D, 0.0D));
+
                     }//C clear/reset
                     case 67 ->{
                         reset();

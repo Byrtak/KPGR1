@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class Renderer3D implements GPURenderer{
 
-    private  Mat4 model, oldModel, view,projection;
+    private  Mat4 model,model0,model1, oldModel0,oldModel1, view,projection;
 
     private final LineRasterizer lineRasterizer;
     private final Raster raster;
@@ -25,7 +25,10 @@ public class Renderer3D implements GPURenderer{
         this.lineRasterizer = new FilledLineRasterizer(raster);
 
         model = new Mat4Identity();
-        oldModel = model;
+        model0 = new Mat4Identity();
+        model1 =  new Mat4Identity();
+        oldModel1 = new Mat4Identity();
+        oldModel0 = new Mat4Identity();
         view = new Mat4Identity();
         projection = new Mat4Identity();
     }
@@ -34,13 +37,7 @@ public class Renderer3D implements GPURenderer{
     @Override
     public void draw(Scene scene) {
         List<Solid> solids = scene.getSolids();
-
-        Solid s1 = solids.get(0);
-
-        Solid s2 = solids.get(1);
         for (Solid solid : solids) {
-            //Draw XYZ axis
-            if (solid.isAxis()){
                 List<Integer> ib = solid.getIndexBuffer();
                 List<Point3D> vb = solid.getVertexBuffer();
                 for (int i = 0; i < ib.size(); i += 2) {
@@ -48,66 +45,40 @@ public class Renderer3D implements GPURenderer{
                     Integer i2 = ib.get(i + 1);
                     Point3D p1 = vb.get(i1);
                     Point3D p2 = vb.get(i2);
-                    transformAxis(p1, p2,solid.getColor());
-                }
-            }
-            //draw normal object
-            if (!solid.isAxis()){
-                List<Integer> ib = solid.getIndexBuffer();
-                List<Point3D> vb = solid.getVertexBuffer();
-                for (int i = 0; i < ib.size(); i += 2) {
-                    Integer i1 = ib.get(i);
-                    Integer i2 = ib.get(i + 1);
-                    Point3D p1 = vb.get(i1);
-                    Point3D p2 = vb.get(i2);
-                    //transformLine(p1, p2,solid.getColor(),solid.CanRotate());
-            }
-
+                    transformLine(p1, p2,solid.getColor(),solid.CanRotate(),solid.isAxis(), solid.getModel());
             }
         }
-
     }
 
-    private void transformAxis(Point3D a, Point3D b, int color) {
-        a = a.mul(new Mat4Identity()).mul(view).mul(projection);
-        b = b.mul(new Mat4Identity()).mul(view).mul(projection);
-        if(clip(a)) return;
-        if(clip(b)) return;
+    private void transformLine(Point3D a, Point3D b, int color, boolean canRotate, boolean axis, int typeOfModel) {
 
-        Optional<Vec3D> dehomogA = a.dehomog();
-        Optional<Vec3D> dehomogB = b.dehomog();
-        if(dehomogA.isEmpty() || dehomogB.isEmpty()) return;
-
-        Vec3D v1 = dehomogA.get();
-        Vec3D v2 = dehomogB.get();
-
-        Vec3D vv1 = transformToWindow(v1);
-        Vec3D vv2 = transformToWindow(v2);
-
-        lineRasterizer.rasterize(
-                (int)Math.round(vv1.getX()),
-                (int)Math.round(vv1.getY()),
-                (int)Math.round(vv2.getX()),
-                (int)Math.round(vv2.getY()),color
-
-        );
-
-    }
-
-    private void transformLine(Point3D a, Point3D b, int color, boolean canRotate) {
-
-        if (canRotate){
-            if (!oldModel.eEquals(model)) {
-                a = a.mul(model).mul(view).mul(projection);
-                b = b.mul(model).mul(view).mul(projection);
-            } else {
-                a = a.mul(oldModel).mul(view).mul(projection);
-                b = b.mul(oldModel).mul(view).mul(projection);
-            }
-
+        if (axis){
+            a = a.mul(view).mul(projection);
+            b = b.mul(view).mul(projection);
         }else {
-            a = a.mul(oldModel).mul(view).mul(projection);
-            b = b.mul(oldModel).mul(view).mul(projection);
+
+            if (typeOfModel == 0){
+                if (canRotate) {
+
+                    a = a.mul(model).mul(view).mul(projection);
+                    b = b.mul(model).mul(view).mul(projection);
+                    oldModel0 =model;
+                } else {
+                    a = a.mul(oldModel0).mul(view).mul(projection);
+                    b = b.mul(oldModel0).mul(view).mul(projection);
+                }
+            } else if(typeOfModel == 1){
+
+                if (canRotate) {
+
+                    a = a.mul(model1).mul(view).mul(projection);
+                    b = b.mul(model1).mul(view).mul(projection);
+                    oldModel1 =model1;
+                } else {
+                    a = a.mul(oldModel1).mul(view).mul(projection);
+                    b = b.mul(oldModel1).mul(view).mul(projection);
+                }
+            }
         }
 
         if(clip(a)) return;
@@ -152,17 +123,27 @@ public class Renderer3D implements GPURenderer{
     private boolean clip(Point3D p) {
         //slide 78
         //−w ≤ x ≤ w ,−w ≤ y ≤ w ,0 ≤ z ≤
-        return false;
+//        return false;
+
         //!(Math.min(a.x, b.x) < -1.0D) && !(Math.max(a.x, b.x) > 1.0D) && !(Math.min(a.y, b.y) < -1.0D) && !(Math.max(a.y, b.y) > 1.0D) && !(Math.min(a.z, b.z) < 0.0D) && !(Math.max(a.z, b.z) > 1.0D)
-     //   if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())); return true;
+      if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())){
+          return false;
+      }else return true;
+
     }
-    public void setOldModel(){
-        oldModel = model;
+    public void getModel(){
+
     }
 
     @Override
     public void setModel(Mat4 model) {
         this.model = this.model.mul(model);
+
+    }
+
+    @Override
+    public void setModel1(Mat4 model) {
+        this.model1 = this.model1.mul(model);
     }
 
     @Override
@@ -178,7 +159,8 @@ public class Renderer3D implements GPURenderer{
     @Override
     public void resetMatrix() {
         model = new Mat4Identity();
-        oldModel = model;
+        oldModel0 = model;
+        oldModel1 = model;
 //        view = new Mat4Identity();
 //        projection =new Mat4Identity();
     }

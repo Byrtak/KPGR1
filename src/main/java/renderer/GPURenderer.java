@@ -8,6 +8,7 @@ public interface GPURenderer {
     void draw(Scene scene);
 
     void setModel(Mat4 model); //modelovaci (kombinace scale, rotace, posunuti)
+    void setModel1(Mat4 model); //modelovaci (kombinace scale, rotace, posunuti)
 
     void setView(Mat4 view); //pohledova
 
@@ -15,6 +16,6 @@ public interface GPURenderer {
 
     void resetMatrix();
 
-    void setOldModel();
+    void getModel();
 
 }

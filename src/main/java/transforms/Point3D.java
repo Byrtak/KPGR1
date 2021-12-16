@@ -267,7 +267,7 @@ public class Point3D {
 	 * 
 	 * @return new Optional<Vec3D> instance
 	 */
-	public Optional<Vec3D> dehomog() {
+	public Optional<Vec3D>  dehomog() {
 		if (w == 0.0)
 			return Optional.empty();
 		return Optional.of(new Vec3D(x / w, y / w, z / w));
