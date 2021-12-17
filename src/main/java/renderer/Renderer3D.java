@@ -6,7 +6,6 @@ import rasterize.FilledLineRasterizer;
 import rasterize.LineRasterizer;
 import rasterize.Raster;
 import transforms.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -110,13 +109,7 @@ public class Renderer3D implements GPURenderer{
     private boolean clip(Point3D p) {
         //slide 78
         //−w ≤ x ≤ w ,−w ≤ y ≤ w ,0 ≤ z ≤
-        //!(Math.min(a.x, b.x) < -1.0D) && !(Math.max(a.x, b.x) > 1.0D) && !(Math.min(a.y, b.y) < -1.0D) && !(Math.max(a.y, b.y) > 1.0D) && !(Math.min(a.z, b.z) < 0.0D) && !(Math.max(a.z, b.z) > 1.0D)
-      if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())){
-          return false;
-      }else return true;
-
-    }
-    public void getModel(){
+        return (!(-(p.getW()) <= p.getX())) && (!(p.getX() <= p.getW())) && (!(-(p.getW()) <= p.getY())) && (!(p.getY() <= p.getW())) && (!(0 <= p.getZ())) && (!(p.getZ() <= p.getW()));
 
     }
 

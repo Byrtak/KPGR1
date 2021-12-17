@@ -6,7 +6,6 @@ import renderer.GPURenderer;
 import renderer.Renderer3D;
 import transforms.*;
 import view.Panel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -68,7 +67,6 @@ public class Controller3D implements Controller{
     }
     private void redraw() {
         raster.clear();
-
         renderer.draw(mainScene);
         renderer.draw(axisScene);
 
@@ -182,7 +180,7 @@ public class Controller3D implements Controller{
                                 renderer.setModel( new Mat4Transl(0.0D, 0.0D, 1.0D));
                             }
                             if (s1.CanRotate()){
-                                renderer.setModel1(new Mat4Transl(0.0D, 0.0D, 1.0D));;
+                                renderer.setModel1(new Mat4Transl(0.0D, 0.0D, 1.0D));
                             }
                         }
                         //Shift+ right Arrow
@@ -266,12 +264,10 @@ public class Controller3D implements Controller{
                     switch (e.getKeyCode()) {
 
                         //1 cube
-                        case 49->{
-                            s.setCanRotate();
-                        }//2 pyramid
-                        case 50->{
-                            s1.setCanRotate();
-                        }//3
+                        case 49-> s.setCanRotate();
+                        //2 pyramid
+                        case 50-> s1.setCanRotate();
+                        //3
                         case 51->{
                             //(double) raster.getHeight() / (double) raster.getWidth()
                             projection = new Mat4OrthoRH((double) raster.getHeight()/ 20,(double) raster.getWidth()/20,0.1D,100D);
@@ -298,7 +294,7 @@ public class Controller3D implements Controller{
                         }
                         //W
                         case 87 -> {
-                            renderer.setView(camera.down(speedW).getViewMatrix());
+                            renderer.setView(camera.backward(speedW).getViewMatrix());
                             speedW += 0.2D;
                         }
                         /*================================================================*/
@@ -329,9 +325,7 @@ public class Controller3D implements Controller{
 
                         }
                         //C clear/reset
-                        case 67 ->{
-                            reset();
-                        }
+                        case 67 -> reset();
 
                     }
                 }
