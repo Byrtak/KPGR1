@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class Renderer3D implements GPURenderer{
 
-    private  Mat4 model,model0,model1, oldModel0,oldModel1, view,projection;
+    private  Mat4 model,model1, oldModel0,oldModel1, view,projection;
 
     private final LineRasterizer lineRasterizer;
     private final Raster raster;
@@ -25,7 +25,6 @@ public class Renderer3D implements GPURenderer{
         this.lineRasterizer = new FilledLineRasterizer(raster);
 
         model = new Mat4Identity();
-        model0 = new Mat4Identity();
         model1 =  new Mat4Identity();
         oldModel1 = new Mat4Identity();
         oldModel0 = new Mat4Identity();
@@ -59,7 +58,6 @@ public class Renderer3D implements GPURenderer{
 
             if (typeOfModel == 0){
                 if (canRotate) {
-
                     a = a.mul(model).mul(view).mul(projection);
                     b = b.mul(model).mul(view).mul(projection);
                     oldModel0 =model;
@@ -99,32 +97,21 @@ public class Renderer3D implements GPURenderer{
                 (int)Math.round(vv1.getY()),
                 (int)Math.round(vv2.getX()),
                 (int)Math.round(vv2.getY()),color
-
         );
-
     }
 
     private Vec3D transformToWindow(Vec3D vec) {
         //slide 90
-        //
-
         int w = raster.getWidth() / 2;
         int h = raster.getHeight() / 2;
-//        return vec.mul(new Vec3D(1,-1,1))
-//                .mul(new Vec3D(1,1,0))
-//                .mul(new Vec3D(raster.getWidth() / 2.0, raster.getHeight() /2.0,1.0D));
         return vec.mul(new Vec3D(1,-1,1))
                 .mul(new Vec3D(1,1,0))
                 .mul(new Vec3D(w-1 / 2.0, h-1 /2.0,1.0D));
-
-
     }
 
     private boolean clip(Point3D p) {
         //slide 78
         //−w ≤ x ≤ w ,−w ≤ y ≤ w ,0 ≤ z ≤
-//        return false;
-
         //!(Math.min(a.x, b.x) < -1.0D) && !(Math.max(a.x, b.x) > 1.0D) && !(Math.min(a.y, b.y) < -1.0D) && !(Math.max(a.y, b.y) > 1.0D) && !(Math.min(a.z, b.z) < 0.0D) && !(Math.max(a.z, b.z) > 1.0D)
       if ((-(p.getW()) <= p.getX()) || (p.getX() <= p.getW()) || (-(p.getW()) <= p.getY()) || (p.getY() <= p.getW()) || (0 <= p.getZ()) || (p.getZ() <= p.getW())){
           return false;
@@ -148,7 +135,7 @@ public class Renderer3D implements GPURenderer{
 
     @Override
     public void setView(Mat4 view) {
-     this.view = this.view.mul(view);
+     this.view = view ;
     }
 
     @Override
@@ -159,9 +146,10 @@ public class Renderer3D implements GPURenderer{
     @Override
     public void resetMatrix() {
         model = new Mat4Identity();
+        model1 = new Mat4Identity();
         oldModel0 = model;
         oldModel1 = model;
-//        view = new Mat4Identity();
-//        projection =new Mat4Identity();
+        projection =new Mat4Identity();
+        view = new Mat4Identity();
     }
 }

@@ -13,9 +13,11 @@ import java.util.Locale;
  * @version 2016
  */
 public class Camera {
-	private final double azimuth, radius, zenith;
+	private double azimuth;
+	private double radius;
+	private double zenith;
 	private final boolean firstPerson; // true -> 1st person, false -> 3rd person
-	private final Vec3D eye, pos, viewVector;
+	private  Vec3D eye, pos, viewVector;
 	private final Mat4 view;
 
 	/**
@@ -159,6 +161,18 @@ public class Camera {
 	 */
 	public Camera addZenith(final double ang) {
 		return new Camera(this, azimuth, Math.max(-Math.PI / 2, Math.min(zenith + ang, Math.PI / 2)));
+	}
+	public  void setZenith(final double ang) {
+		this.zenith = ang;
+	}
+	public void setAzimuth(final double ang) {
+		this.azimuth = ang;
+	}
+	public void setRadius(final double ang) {
+		this.radius = ang;
+	}
+	public void setPositon(Vec3D apos) {
+		this.pos = new Vec3D(apos);
 	}
 
 	/**

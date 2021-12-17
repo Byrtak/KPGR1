@@ -8,13 +8,13 @@ import transforms.*;
 import view.Panel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class Controller3D implements Controller{
 
-    private final Camera camera ;
-    private final Mat4 projection;
-    private Mat4 model;
+    private Camera camera ;
+    private Mat4 projection;
     private Mat4 view;
     private final Raster raster;
     private final GPURenderer renderer;
@@ -25,27 +25,32 @@ public class Controller3D implements Controller{
     public Controller3D(Panel panel) {
         this.raster = panel.getRaster();
         this.renderer = new Renderer3D(raster);
-        initListeners(panel);
-// 9,-13,0,90,/-15
-        camera = new Camera().withPosition(new Vec3D(35, 50, -5.0)).withAzimuth(Math.toRadians(210)).withZenith(-15);
-        //camera = new Camera().withPosition(new Vec3D(10, -12, -12.0)).withAzimuth(Math.toRadians(10)).withZenith();
+
+
+
+        camera = new Camera().withPosition(new Vec3D(35, 50, -15.0)).withAzimuth(Math.toRadians(210)).withZenith(-15).withRadius(30D);
+        view = camera.getViewMatrix();
+
 
         projection = new Mat4PerspRH(
-                Math.PI /3,
-                raster.getHeight() / (float) raster.getWidth(),
-                0.1,
-                50);
-
-
+                0.77D,
+                (double) raster.getHeight() / (double) raster.getWidth(),
+                0.8D,
+                100D);
 
         axisScene = new Scene();
         mainScene = new Scene();
-        mainScene.getSolids().add(new Cube(0xf00f0f));
-        mainScene.getSolids().add(new Pyramid(0xf30f7f));
+        initObjects();
+        initListeners(panel);
+        display();
+    }
+    private void initObjects(){
+
+        mainScene.getSolids().add(new Octagon(Color.YELLOW.getRGB()));//obj 0
+        mainScene.getSolids().add(new Pyramid(0xf30f7f));//obj 1
         axisScene.getSolids().add(new AxisLineX());
         axisScene.getSolids().add(new AxisLineY());
         axisScene.getSolids().add(new AxisLineZ());
-        display();
 
     }
 
@@ -54,6 +59,7 @@ public class Controller3D implements Controller{
         for (Solid s : mainScene.getSolids()) {
             s.setCanRotate();
         }
+        view = new Mat4ViewRH(new Vec3D(-15.0D, 10.0D, 30.0D), new Vec3D(0.0D, 0.0D, -1.0D), new Vec3D(0.0D, 1.0D, 0.0D));
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
         renderer.draw(mainScene);
@@ -62,21 +68,31 @@ public class Controller3D implements Controller{
     }
     private void redraw() {
         raster.clear();
-//        renderer.setView(view);
+       // renderer.setView(view);
         renderer.draw(mainScene);
         renderer.draw(axisScene);
+
     }
 
     private void reset(){
         raster.clear();
         renderer.resetMatrix();
+
+        renderer.setProjection(new Mat4PerspRH(
+                0.77D,
+                (double) raster.getHeight() / (double) raster.getWidth(),
+                0.8D,
+                100D));
+        camera = new Camera().withPosition(new Vec3D(35, 50, -15.0)).withAzimuth(Math.toRadians(210)).withZenith(-15);
+
+        renderer.setView(view = camera.getViewMatrix());
         renderer.draw(mainScene);
     }
 
 
     @Override
     public void initListeners(Panel panel) {
-        //todo
+
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -97,9 +113,22 @@ public class Controller3D implements Controller{
             public void mouseDragged(MouseEvent e) {
                 nX = e.getY();
                 nY = e.getX();
+                Solid s = mainScene.getSolids().get(0);
+                Solid s1 = mainScene.getSolids().get(1);
                 if (SwingUtilities.isRightMouseButton(e)){
-                    renderer.setModel(new Mat4RotY(Math.PI *  (oY - nY) / (double) (raster.getHeight()))
-                            .mul(new Mat4RotX(Math.PI *  (oX - nX) / (double) (raster.getWidth()))));
+                    if (s.CanRotate()){
+                        renderer.setModel(new Mat4RotY(Math.PI * (oY - nY) / (double) raster.getHeight() )
+                                .mul(new Mat4RotZ(Math.PI *  (oX - nX) / (double) (raster.getWidth()))));
+                    }
+                    if (s1.CanRotate()){
+                        renderer.setModel1( new Mat4RotY(Math.PI * (oY - nY) / (double) raster.getHeight() )
+                                .mul(new Mat4RotZ(Math.PI *  (oX - nX) / (double) raster.getWidth() )));
+                    }
+                }
+                if (SwingUtilities.isLeftMouseButton(e)){
+                    //TODO not working properly
+//                    renderer.setView(camera.addAzimuth(Math.PI * (oX-nX) / (float) raster.getWidth()).getViewMatrix());
+//                    renderer.setView(camera.addZenith(Math.PI * (oX-nX) / (float) raster.getHeight()).getViewMatrix());
 
                 }
                 redraw();
@@ -229,67 +258,89 @@ public class Controller3D implements Controller{
                         }
                         /*================================================================*/
                     }
+                }else {
+                    switch (e.getKeyCode()) {
+
+                        //1 cube
+                        case 49->{
+                            s.setCanRotate();
+                        }//2 pyramid
+                        case 50->{
+                            s1.setCanRotate();
+                        }
+                        case 51->{
+                            //(double) raster.getHeight() / (double) raster.getWidth()
+                            projection = new Mat4OrthoRH((double) raster.getHeight()/ 20,(double) raster.getWidth()/20,0.1D,100D);
+                            renderer.setProjection(projection);
+
+                        }
+                        /*=================Camera==================================*/
+                        //A
+                        case 65 -> {
+                            renderer.setView(camera.left(0.4D).getViewMatrix());
+                        }
+                        //D
+                        case 68 -> {
+                            renderer.setView(camera.right(0.4D).getViewMatrix());
+                        }
+                        //S
+                        case 83 ->{
+                            renderer.setView( camera.forward(0.4D).getViewMatrix());
+                        }
+                        //W
+                        case 87 -> {
+                            renderer.setView(camera.down(0.4D).getViewMatrix());
+                        }
+                        /*================================================================*/
+
+                        /*==============Transformation of scale========================*/
+                        //Q scale +
+                        case 81 -> {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4Scale(1.1D, 1.1D, 1.1D));
+                            }
+                        }
+                        //E scale -
+                        case 69 -> {
+                            if (s.CanRotate()){
+                                renderer.setModel(new Mat4Scale(0.9D, 0.9D, 0.9D));
+                            }
+                            if (s1.CanRotate()){
+                                renderer.setModel1(new Mat4Scale(0.9D, 0.9D, 0.9D));
+                            }
+                        }
+                        /*================================================================*/
+
+                        //r
+                        case 82 -> {
+
+                        }
+                        //C clear/reset
+                        case 67 ->{
+                            reset();
+                        }
+
+                    }
                 }
 
-                switch (e.getKeyCode()) {
 
-                    //1 cube
-                    case 49->{
-                        s.setCanRotate();
-                    }//2 pyramid
-                    case 50->{
-                        s1.setCanRotate();
-
-                    }
-                    //A
-                    case 65 -> {
-
-                    }
-                    //D
-                    case 68 -> {
-
-                    }
-                    //S
-                    case 83 ->{
-
-                    }
-                    //W
-                    case 87 -> {
-
-                    }
-                    /*==============Transformation of scale========================*/
-                    //Q scale +
-                    case 81 -> {
-                        if (s.CanRotate()){
-                            renderer.setModel(new Mat4Scale(1.1D, 1.1D, 1.1D));
-                        }
-                        if (s1.CanRotate()){
-                            renderer.setModel1(new Mat4Scale(1.1D, 1.1D, 1.1D));
-                        }
-                    }
-                    //E scale -
-                    case 69 -> {
-                        if (s.CanRotate()){
-                            renderer.setModel(new Mat4Scale(0.9D, 0.9D, 0.9D));
-                        }
-                        if (s1.CanRotate()){
-                            renderer.setModel1(new Mat4Scale(0.9D, 0.9D, 0.9D));
-                        }
-                    }
-                    /*================================================================*/
-
-                    //r
-                    case 82 -> {
-
-                    }//C clear/reset
-                    case 67 ->{
-                        reset();
-                    }
-
-                }
                 redraw();
             }
         });
+
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                panel.resize();
+                initObjects();
+                display();
+                redraw();
+            }
+        });
+
     }
 
 
