@@ -162,19 +162,6 @@ public class Camera {
 	public Camera addZenith(final double ang) {
 		return new Camera(this, azimuth, Math.max(-Math.PI / 2, Math.min(zenith + ang, Math.PI / 2)));
 	}
-	public  void setZenith(final double ang) {
-		this.zenith = ang;
-	}
-	public void setAzimuth(final double ang) {
-		this.azimuth = ang;
-	}
-	public void setRadius(final double ang) {
-		this.radius = ang;
-	}
-	public void setPositon(Vec3D apos) {
-		this.pos = new Vec3D(apos);
-	}
-
 	/**
 	 * Returns a new camera moved in the opposite direction of the view vector
 	 * by the given distance

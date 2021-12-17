@@ -5,10 +5,8 @@ import model3D.Solid;
 import rasterize.FilledLineRasterizer;
 import rasterize.LineRasterizer;
 import rasterize.Raster;
-import transforms.Mat4;
-import transforms.Mat4Identity;
-import transforms.Point3D;
-import transforms.Vec3D;
+import transforms.*;
+
 import java.util.List;
 import java.util.Optional;
 

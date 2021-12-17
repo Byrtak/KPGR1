@@ -21,6 +21,7 @@ public class Controller3D implements Controller{
     private final Scene mainScene;
     private final Scene axisScene;
     double oX,oY,nX,nY;
+    double speedW,speedA,speedS,speedD = 0.2D;
 
     public Controller3D(Panel panel) {
         this.raster = panel.getRaster();
@@ -36,7 +37,7 @@ public class Controller3D implements Controller{
                 0.77D,
                 (double) raster.getHeight() / (double) raster.getWidth(),
                 0.8D,
-                100D);
+                10D);
 
         axisScene = new Scene();
         mainScene = new Scene();
@@ -59,7 +60,6 @@ public class Controller3D implements Controller{
         for (Solid s : mainScene.getSolids()) {
             s.setCanRotate();
         }
-        view = new Mat4ViewRH(new Vec3D(-15.0D, 10.0D, 30.0D), new Vec3D(0.0D, 0.0D, -1.0D), new Vec3D(0.0D, 1.0D, 0.0D));
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
         renderer.draw(mainScene);
@@ -68,7 +68,7 @@ public class Controller3D implements Controller{
     }
     private void redraw() {
         raster.clear();
-       // renderer.setView(view);
+
         renderer.draw(mainScene);
         renderer.draw(axisScene);
 
@@ -76,6 +76,10 @@ public class Controller3D implements Controller{
 
     private void reset(){
         raster.clear();
+        speedW = 0.2d;
+        speedA =  speedW;
+        speedD = 0.2d;
+        speedS = 0.2d;
         renderer.resetMatrix();
 
         renderer.setProjection(new Mat4PerspRH(
@@ -83,7 +87,7 @@ public class Controller3D implements Controller{
                 (double) raster.getHeight() / (double) raster.getWidth(),
                 0.8D,
                 100D));
-        camera = new Camera().withPosition(new Vec3D(35, 50, -15.0)).withAzimuth(Math.toRadians(210)).withZenith(-15);
+        camera = new Camera().withPosition(new Vec3D(35, 50, -15.0)).withAzimuth(Math.toRadians(210)).withZenith(-15).withRadius(30D);
 
         renderer.setView(view = camera.getViewMatrix());
         renderer.draw(mainScene);
@@ -117,12 +121,12 @@ public class Controller3D implements Controller{
                 Solid s1 = mainScene.getSolids().get(1);
                 if (SwingUtilities.isRightMouseButton(e)){
                     if (s.CanRotate()){
-                        renderer.setModel(new Mat4RotY(Math.PI * (oY - nY) / (double) raster.getHeight() )
-                                .mul(new Mat4RotZ(Math.PI *  (oX - nX) / (double) (raster.getWidth()))));
+                        renderer.setModel(new Mat4RotY(Math.PI * (nY - oY) / (double) raster.getHeight() )
+                                .mul(new Mat4RotZ(Math.PI *  (nX - oX) / (double) (raster.getWidth()))));
                     }
                     if (s1.CanRotate()){
-                        renderer.setModel1( new Mat4RotY(Math.PI * (oY - nY) / (double) raster.getHeight() )
-                                .mul(new Mat4RotZ(Math.PI *  (oX - nX) / (double) raster.getWidth() )));
+                        renderer.setModel1( new Mat4RotY(Math.PI * (nY - oY) / (double) raster.getHeight() )
+                                .mul(new Mat4RotZ(Math.PI *  (nX - oX) / (double) raster.getWidth() )));
                     }
                 }
                 if (SwingUtilities.isLeftMouseButton(e)){
@@ -267,7 +271,7 @@ public class Controller3D implements Controller{
                         }//2 pyramid
                         case 50->{
                             s1.setCanRotate();
-                        }
+                        }//3
                         case 51->{
                             //(double) raster.getHeight() / (double) raster.getWidth()
                             projection = new Mat4OrthoRH((double) raster.getHeight()/ 20,(double) raster.getWidth()/20,0.1D,100D);
@@ -277,19 +281,25 @@ public class Controller3D implements Controller{
                         /*=================Camera==================================*/
                         //A
                         case 65 -> {
-                            renderer.setView(camera.left(0.4D).getViewMatrix());
+                           view=  camera.left(speedA).getViewMatrix();
+                           renderer.setView(view);
+                            speedA += 0.2D;
                         }
                         //D
                         case 68 -> {
-                            renderer.setView(camera.right(0.4D).getViewMatrix());
+                            view=  camera.right(speedD).getViewMatrix();
+                            renderer.setView(view);
+                            speedD += 0.2D;
                         }
                         //S
                         case 83 ->{
-                            renderer.setView( camera.forward(0.4D).getViewMatrix());
+                            renderer.setView( camera.forward(speedS).getViewMatrix());
+                            speedS += 0.2D;
                         }
                         //W
                         case 87 -> {
-                            renderer.setView(camera.down(0.4D).getViewMatrix());
+                            renderer.setView(camera.down(speedW).getViewMatrix());
+                            speedW += 0.2D;
                         }
                         /*================================================================*/
 
