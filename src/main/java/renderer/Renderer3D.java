@@ -65,7 +65,6 @@ public class Renderer3D implements GPURenderer{
             } else if(typeOfModel == 1){
 
                 if (canRotate) {
-
                     a = a.mul(model1).mul(view).mul(projection);
                     b = b.mul(model1).mul(view).mul(projection);
                     oldModel1 =model1;
@@ -109,6 +108,11 @@ public class Renderer3D implements GPURenderer{
     private boolean clip(Point3D p) {
         //slide 78
         //−w ≤ x ≤ w ,−w ≤ y ≤ w ,0 ≤ z ≤
+        double w = p.getW();
+        double x =p.getX();
+        double y = p.getY();
+        double z = p.getZ();
+        //if ((-w <= x) && (x<= w) && )
         return (!(-(p.getW()) <= p.getX())) && (!(p.getX() <= p.getW())) && (!(-(p.getW()) <= p.getY())) && (!(p.getY() <= p.getW())) && (!(0 <= p.getZ())) && (!(p.getZ() <= p.getW()));
 
     }

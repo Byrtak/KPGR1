@@ -21,6 +21,7 @@ public class Controller3D implements Controller{
     private final Scene axisScene;
     double oX,oY,nX,nY;
     double speedW,speedA,speedS,speedD = 0.2D;
+    double sX, sY;
 
     public Controller3D(Panel panel) {
         this.raster = panel.getRaster();
@@ -48,6 +49,11 @@ public class Controller3D implements Controller{
 
         mainScene.getSolids().add(new Octagon(Color.YELLOW.getRGB()));//obj 0
         mainScene.getSolids().add(new Pyramid(0xf30f7f));//obj 1
+
+        mainScene.getSolids().add(new Ferguson(0xf14f71));
+        mainScene.getSolids().add(new Coon(Color.CYAN.getRGB()));
+        mainScene.getSolids().add(new Bezier(Color.orange.getRGB()));
+
         axisScene.getSolids().add(new AxisLineX());
         axisScene.getSolids().add(new AxisLineY());
         axisScene.getSolids().add(new AxisLineZ());
@@ -113,8 +119,8 @@ public class Controller3D implements Controller{
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                nX = e.getY();
-                nY = e.getX();
+                nX = e.getX();
+                nY = e.getY();
                 Solid s = mainScene.getSolids().get(0);
                 Solid s1 = mainScene.getSolids().get(1);
                 if (SwingUtilities.isRightMouseButton(e)){
@@ -128,11 +134,15 @@ public class Controller3D implements Controller{
                     }
                 }
                 if (SwingUtilities.isLeftMouseButton(e)){
-                    //TODO not working properly
-//                    renderer.setView(camera.addAzimuth(Math.PI * (oX-nX) / (float) raster.getWidth()).getViewMatrix());
-//                    renderer.setView(camera.addZenith(Math.PI * (oX-nX) / (float) raster.getHeight()).getViewMatrix());
+                    double dX = sX - nX;
+                    camera = camera.addAzimuth( (dX / 1000) );
+                    renderer.setView(camera.getViewMatrix());
 
                 }
+
+                sX = nX;
+                sY = nY;
+
                 redraw();
             }
         });
@@ -186,8 +196,8 @@ public class Controller3D implements Controller{
                         //Shift+ right Arrow
                         case 39->{
                             if (s.CanRotate()){
-                            renderer.setModel( new Mat4Transl(0.0D, -1.0D, 0.0D));
-                        }
+                                renderer.setModel( new Mat4Transl(0.0D, -1.0D, 0.0D));
+                            }
                             if (s1.CanRotate()){
                                 renderer.setModel1(new Mat4Transl(0.0D, -1.0D, 0.0D));
                             }
@@ -269,7 +279,6 @@ public class Controller3D implements Controller{
                         case 50-> s1.setCanRotate();
                         //3
                         case 51->{
-                            //(double) raster.getHeight() / (double) raster.getWidth()
                             projection = new Mat4OrthoRH((double) raster.getHeight()/ 20,(double) raster.getWidth()/20,0.1D,100D);
                             renderer.setProjection(projection);
 
@@ -277,8 +286,8 @@ public class Controller3D implements Controller{
                         /*=================Camera==================================*/
                         //A
                         case 65 -> {
-                           view=  camera.left(speedA).getViewMatrix();
-                           renderer.setView(view);
+                            view=  camera.left(speedA).getViewMatrix();
+                            renderer.setView(view);
                             speedA += 0.2D;
                         }
                         //D
